@@ -98,16 +98,23 @@
       ? '<img class="media" src="' + escapar(r.foto) + '" alt="' + escapar(r.nombre) + '">'
       : '';
     var video = r.fotograma
-      ? '<a class="video" href="' + escapar(r.instagram) + '" target="_blank" rel="noopener" aria-label="Ver el vídeo de esta receta en Instagram">' +
-          '<img src="' + escapar(r.fotograma) + '" alt="">' +
-          '<span class="play"><svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span></a>'
+      ? '<div class="video-wrap"><a class="video" href="' + escapar(r.instagram) + '" target="_blank" rel="noopener" aria-label="Ver el vídeo de esta receta en Instagram">' +
+          '<img src="' + escapar(r.fotograma) + '" alt="" loading="lazy">' +
+          '<span class="play"><svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span></a></div>'
       : '';
+    var mensaje = 'Mira esta receta de Iuki: ' + r.nombre + '\n' + location.href;
+    var whatsapp = 'https://wa.me/?text=' + encodeURIComponent(mensaje);
     var consejo = r.consejo
       ? '<div class="tip"><strong>Consejo de Iuki:</strong> ' + escapar(r.consejo) + '</div>'
       : '';
 
     receta.innerHTML =
-      '<span class="badge">' + escapar(NOMBRES_CATEGORIA[r.categoria] || '') + '</span>' +
+      '<div class="recipe-top">' +
+        '<span class="badge">' + escapar(NOMBRES_CATEGORIA[r.categoria] || '') + '</span>' +
+        '<a class="btn-wa" href="' + escapar(whatsapp) + '" target="_blank" rel="noopener">' +
+          '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.6-4.3A8.5 8.5 0 1 1 20.5 11.5z"/></svg>' +
+          'Compartir por WhatsApp</a>' +
+      '</div>' +
       '<div class="detail">' +
         '<div>' + foto +
           '<div class="pad">' +

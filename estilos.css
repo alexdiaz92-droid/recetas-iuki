@@ -71,13 +71,16 @@ h1 { margin: 0; font-family: var(--display); font-size: clamp(34px, 6vw, 56px); 
 .back:hover { background: var(--oliva-suave); color: var(--negro); }
 
 /* Receta abierta */
+.recipe-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .badge { align-self: flex-start; padding: 6px 14px; border-radius: 999px; background: var(--oliva-suave); color: #3A4A1E; font-size: 16px; font-weight: 800; }
 .detail { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; background: var(--negro); border: 2px solid var(--negro); border-radius: 20px; overflow: hidden; }
 .detail > div { background: var(--blanco); display: flex; flex-direction: column; }
-.media { display: block; width: 100%; height: 230px; object-fit: cover; border-bottom: 2px solid var(--negro); background: var(--oliva-claro); }
-.video { position: relative; display: block; height: 230px; border-bottom: 2px solid var(--negro); overflow: hidden; background: var(--negro); }
+.media { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-bottom: 2px solid var(--negro); background: var(--oliva-claro); }
+/* Fotograma en vertical, como se ve en Instagram: sin recortar ni ampliar */
+.video-wrap { display: flex; justify-content: center; padding: 20px 16px; background: var(--oliva-suave); border-bottom: 2px solid var(--negro); }
+.video { position: relative; display: block; width: min(62%, 240px); aspect-ratio: 9 / 16; border: 2px solid var(--negro); border-radius: 16px; overflow: hidden; background: var(--negro); }
 .video img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.play { position: absolute; right: 14px; bottom: 14px; width: 64px; height: 64px; border-radius: 50%; background: rgba(20, 20, 20, .72); color: var(--blanco); display: flex; align-items: center; justify-content: center; }
+.play { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); width: 64px; height: 64px; border-radius: 50%; background: rgba(20, 20, 20, .72); color: var(--blanco); display: flex; align-items: center; justify-content: center; }
 .pad { padding: 20px 20px 24px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
 .detail h2 { margin: 0; font-family: var(--display); font-size: clamp(28px, 4vw, 34px); line-height: 1.1; font-weight: 600; }
 .label { margin: 6px 0 0; font-size: 15px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--oliva); }
@@ -90,6 +93,8 @@ h1 { margin: 0; font-family: var(--display); font-size: clamp(34px, 6vw, 56px); 
 .btn-ig { margin-top: 6px; display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 14px; background: var(--oliva); color: var(--blanco); font-size: 18px; font-weight: 800; text-decoration: none; text-align: center; padding: 0 16px; }
 .btn-ig:hover { background: var(--oliva-oscuro); color: var(--blanco); }
 .back-bottom { align-self: center; }
+.btn-wa { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 18px; border: 2px solid var(--oliva); border-radius: 14px; background: var(--blanco); color: var(--oliva-oscuro); font: 800 18px var(--texto); text-decoration: none; }
+.btn-wa:hover { background: var(--oliva-suave); color: var(--oliva-oscuro); }
 
 /* Pie */
 .footer { background: var(--negro); color: var(--blanco); padding: 32px 0; }
@@ -104,7 +109,6 @@ h1 { margin: 0; font-family: var(--display); font-size: clamp(34px, 6vw, 56px); 
   .card-photo { height: 210px; }
   .card-name { padding: 16px 20px 20px; font-size: 23px; }
   .hero { height: 380px; }
-  .media, .video { height: 300px; }
   .pad { padding: 28px 32px 32px; }
 }
 @media (min-width: 900px) {

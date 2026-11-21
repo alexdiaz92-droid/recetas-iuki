@@ -20,6 +20,9 @@
     return parseInt(p[2], 10) + ' de ' + MESES[parseInt(p[1], 10) - 1] + ' de ' + p[0];
   }
 
+  // Si una imagen no está en la carpeta img/, se busca en la raíz del sitio
+  var PLAN_B = ' onerror="this.onerror=null;this.src=this.src.replace(\'/img/\',\'/\')"';
+
   var ICONO_PLATO = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><circle cx="12" cy="13" r="3.5"/><path d="M3 4v5M5 4v5M4 9v11M20 4c-1.5 1-2 3-2 5h2v11"/></svg>';
 
   var estado = { texto: '', categoria: 'todas', scrollInicio: 0 };
@@ -77,7 +80,7 @@
     rejilla.innerHTML = lista.map(function (r) {
       return '<a class="card" href="#/receta/' + encodeURIComponent(r.id) + '">' +
         (r.foto
-          ? '<img class="card-photo" src="' + escapar(r.foto) + '" alt="" loading="lazy" width="720" height="480">'
+          ? '<img class="card-photo" src="' + escapar(r.foto) + '" alt="" loading="lazy" width="720" height="480"' + PLAN_B + '>'
           : '<span class="card-photo card-nophoto">' + ICONO_PLATO + '</span>') +
         '<span class="card-name">' + escapar(r.nombre) + '</span></a>';
     }).join('');
@@ -108,12 +111,12 @@
 
   function pintarReceta(r) {
     var foto = r.foto
-      ? '<img class="media" src="' + escapar(r.foto) + '" alt="' + escapar(r.nombre) + '">'
+      ? '<img class="media" src="' + escapar(r.foto) + '" alt="' + escapar(r.nombre) + '"' + PLAN_B + '>'
       : '';
     var enlace = r.instagram || PERFIL;
     var video = r.fotograma
       ? '<div class="video-wrap"><a class="video" href="' + escapar(enlace) + '" target="_blank" rel="noopener" aria-label="Ver el vídeo de esta receta en Instagram">' +
-          '<img src="' + escapar(r.fotograma) + '" alt="" loading="lazy">' +
+          '<img src="' + escapar(r.fotograma) + '" alt="" loading="lazy"' + PLAN_B + '>' +
           '<span class="play"><svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span></a></div>'
       : '';
     var mensaje = 'Mira esta receta de Iuki: ' + r.nombre + '\n' + location.href;

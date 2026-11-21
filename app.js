@@ -5,11 +5,22 @@
   var NOMBRES_CATEGORIA = {
     todas: 'Todas',
     entrantes: 'Entrantes',
+    pasta: 'Pasta y arroz',
     principales: 'Principales',
-    sopas: 'Sopas y cremas',
+    cuchara: 'De cuchara',
     postres: 'Postres'
   };
-  var ORDEN_CATEGORIAS = ['entrantes', 'principales', 'sopas', 'postres'];
+  var ORDEN_CATEGORIAS = ['entrantes', 'pasta', 'principales', 'cuchara', 'postres'];
+  var PERFIL = 'https://www.instagram.com/cocina.iuki/';
+  var MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+  function fechaLarga(f) {
+    var p = String(f || '').split('-');
+    if (p.length !== 3) return '';
+    return parseInt(p[2], 10) + ' de ' + MESES[parseInt(p[1], 10) - 1] + ' de ' + p[0];
+  }
+
+  var ICONO_PLATO = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><circle cx="12" cy="13" r="3.5"/><path d="M3 4v5M5 4v5M4 9v11M20 4c-1.5 1-2 3-2 5h2v11"/></svg>';
 
   var estado = { texto: '', categoria: 'todas', scrollInicio: 0 };
 
@@ -65,7 +76,9 @@
     rejilla.hidden = lista.length === 0;
     rejilla.innerHTML = lista.map(function (r) {
       return '<a class="card" href="#/receta/' + encodeURIComponent(r.id) + '">' +
-        '<img class="card-photo" src="' + escapar(r.foto) + '" alt="" loading="lazy" width="720" height="480">' +
+        (r.foto
+          ? '<img class="card-photo" src="' + escapar(r.foto) + '" alt="" loading="lazy" width="720" height="480">'
+          : '<span class="card-photo card-nophoto">' + ICONO_PLATO + '</span>') +
         '<span class="card-name">' + escapar(r.nombre) + '</span></a>';
     }).join('');
   }
@@ -97,8 +110,9 @@
     var foto = r.foto
       ? '<img class="media" src="' + escapar(r.foto) + '" alt="' + escapar(r.nombre) + '">'
       : '';
+    var enlace = r.instagram || PERFIL;
     var video = r.fotograma
-      ? '<div class="video-wrap"><a class="video" href="' + escapar(r.instagram) + '" target="_blank" rel="noopener" aria-label="Ver el vídeo de esta receta en Instagram">' +
+      ? '<div class="video-wrap"><a class="video" href="' + escapar(enlace) + '" target="_blank" rel="noopener" aria-label="Ver el vídeo de esta receta en Instagram">' +
           '<img src="' + escapar(r.fotograma) + '" alt="" loading="lazy">' +
           '<span class="play"><svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span></a></div>'
       : '';
@@ -120,17 +134,24 @@
           '<div class="pad">' +
             '<h2 tabindex="-1" id="titulo-receta">' + escapar(r.nombre) + '</h2>' +
             '<p class="label">Ingredientes</p>' +
-            '<ul class="ingredients">' + r.ingredientes.map(function (i) { return '<li>' + escapar(i) + '</li>'; }).join('') + '</ul>' +
+            '<ul class="ingredients">' + r.ingredientes.map(function (i) {
+              return /:$/.test(i) ? '<li class="sub">' + escapar(i.slice(0, -1)) + '</li>' : '<li>' + escapar(i) + '</li>';
+            }).join('') + '</ul>' +
           '</div>' +
         '</div>' +
         '<div>' + video +
           '<div class="pad">' +
             '<p class="label">Paso a paso</p>' +
-            '<ol class="steps">' + r.pasos.map(function (p, i) {
-              return '<li><span class="num" aria-hidden="true">' + (i + 1) + '</span><span>' + escapar(p) + '</span></li>';
-            }).join('') + '</ol>' +
+            (r.pasos.length
+              ? '<ol class="steps">' + r.pasos.map(function (p, i) {
+                  return '<li><span class="num" aria-hidden="true">' + (i + 1) + '</span><span>' + escapar(p) + '</span></li>';
+                }).join('') + '</ol>'
+              : '<p class="no-steps">Para esta receta, Iuki explica los pasos en el vídeo.</p>') +
+            (r.pasosDelVideo ? '<p class="fecha">Pasos resumidos de lo que cuenta Iuki en el vídeo.</p>' : '') +
             consejo +
-            '<a class="btn-ig" href="' + escapar(r.instagram) + '" target="_blank" rel="noopener">Ver el vídeo en Instagram</a>' +
+            '<a class="btn-ig" href="' + escapar(enlace) + '" target="_blank" rel="noopener">' +
+              (r.instagram ? 'Ver el vídeo en Instagram' : 'Ver los vídeos de Iuki en Instagram') + '</a>' +
+            (!r.instagram && r.fecha ? '<p class="fecha">Vídeo publicado el ' + fechaLarga(r.fecha) + '.</p>' : '') +
           '</div>' +
         '</div>' +
       '</div>' +

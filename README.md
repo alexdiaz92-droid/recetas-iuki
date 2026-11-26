@@ -11,7 +11,8 @@ Está pensada sobre todo para el móvil.
 | `estilos.css` | Colores, tamaños y diseño (blanco, verde oliva y negro) |
 | `app.js` | Buscador, categorías y apertura de recetas |
 | `recetas.js` | **Las recetas.** Es el único archivo que hay que tocar para añadir platos |
-| `img/` | Fotos del banner, de los platos y fotogramas de los vídeos |
+| `img/` y raíz | Fotos del banner, de los platos y fotogramas de los vídeos |
+| `build.mjs` | Genera la web en `dist/`: una página por receta (`/recetas/<id>/`), sitemap, robots y 404 |
 
 ## Publicarla por primera vez
 
@@ -31,8 +32,8 @@ Está pensada sobre todo para el móvil.
 3. Autoriza a Cloudflare a ver tu cuenta de GitHub y elige el repositorio `recetas-iuki`.
 4. En la configuración de compilación:
    - *Framework preset*: **None** (Ninguno)
-   - *Build command*: déjalo **vacío**
-   - *Build output directory*: **/**
+   - *Build command*: `node build.mjs`
+   - *Build output directory*: `dist`
 5. Pulsa **Guardar e implementar**. En un minuto la web estará en una dirección del tipo `https://recetas-iuki.pages.dev`.
 
 Si más adelante queréis un dominio propio (por ejemplo `recetasdeiuki.com`), se añade desde el proyecto en Cloudflare, en **Dominios personalizados**.
@@ -44,6 +45,8 @@ Si más adelante queréis un dominio propio (por ejemplo `recetasdeiuki.com`), s
    - el fotograma del vídeo, por ejemplo `img/lentejas-video.jpg`
    Mejor en horizontal, unos 720 × 480 píxeles.
 2. Abre `recetas.js` en GitHub, pulsa el lápiz para editar, copia el bloque de una receta y cambia los datos. Las instrucciones están al principio del propio archivo.
-3. Pulsa **Commit changes**. Cloudflare actualiza la web solo en un minuto.
+3. Pulsa **Commit changes**. Cloudflare genera de nuevo la web (portada, página de la receta y sitemap) y la publica sola en un minuto.
+
+Cada receta tiene su propia dirección: `https://cocinaiuki.com/recetas/<id>/`. No cambies el `id` de una receta ya publicada: su dirección cambiaría y se perdería lo que Google ya conoce de ella.
 
 Si os equivocáis con una coma o unas comillas, la web puede quedarse en blanco: basta con corregir el archivo o deshacer el último cambio.

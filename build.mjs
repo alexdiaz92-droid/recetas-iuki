@@ -13,6 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import crypto from 'node:crypto';
 
 const SITIO = 'https://cocinaiuki.com';
 const PERFIL_IG = 'https://www.instagram.com/cocina.iuki/';
@@ -32,6 +33,10 @@ const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', '
 
 const RAIZ = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(RAIZ, 'dist');
+// Versión de cada archivo (cambia cuando cambia su contenido), para que el navegador no use una copia vieja
+const version = (f) => crypto.createHash('md5').update(fs.readFileSync(path.join(RAIZ, f))).digest('hex').slice(0, 8);
+const V = { css: version('estilos.css'), app: version('app.js'), recetas: version('recetas.js') };
+
 const NO_COPIAR = new Set(['.git', '.github', 'dist', 'node_modules', 'build.mjs', 'README.md', 'package.json', 'package-lock.json', '.gitignore']);
 
 // ---------- Utilidades ----------
@@ -114,7 +119,7 @@ const CABECERA_COMUN = `<meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/estilos.css">`;
+<link rel="stylesheet" href="/estilos.css?v=${V.css}">`;
 
 const PIE = `<footer class="footer">
     <div class="wrap footer-inner">
@@ -284,7 +289,10 @@ portada = portada
     ...datosPortada.map((d) => `<script type="application/ld+json">${jsonLd(d)}</script>`)
   ].join('\n'))
   .replace('<p id="contador" class="count" aria-live="polite"></p>', `<p id="contador" class="count" aria-live="polite">${RECETAS.length} recetas</p>`)
-  .replace('<div id="rejilla" class="grid"></div>', `<div id="rejilla" class="grid">${tarjetas}</div>`);
+  .replace('<div id="rejilla" class="grid"></div>', `<div id="rejilla" class="grid">${tarjetas}</div>`)
+  .replace('href="/estilos.css"', `href="/estilos.css?v=${V.css}"`)
+  .replace('src="/recetas.js"', `src="/recetas.js?v=${V.recetas}"`)
+  .replace('src="/app.js"', `src="/app.js?v=${V.app}"`);
 escribir('index.html', portada);
 
 // ---------- Error 404 ----------

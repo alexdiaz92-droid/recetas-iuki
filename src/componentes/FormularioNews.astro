@@ -1,9 +1,9 @@
 ---
-// Formulario de la newsletter. Mientras NEWSLETTER.activa sea false, se ve pero no envía nada.
-import { NEWSLETTER, PAGINAS } from '../datos/web.js';
+// Formulario de la newsletter. Solo se enseña cuando FUNCIONES.newsletter es true (src/datos/web.js).
+import { FUNCIONES, PAGINAS } from '../datos/web.js';
 const { id, boton = 'terracota' } = Astro.props;
 ---
-<form class="formulario-news" data-news data-activa={String(NEWSLETTER.activa)} novalidate>
+<form class="formulario-news" data-news data-activa={String(FUNCIONES.newsletter)} novalidate>
   <label for={id} class="formulario-news__etiqueta">Tu correo</label>
   <div class="formulario-news__fila">
     <input id={id} name="correo" type="email" placeholder="nombre@correo.com" autocomplete="email" required />

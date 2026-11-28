@@ -1,0 +1,28 @@
+---
+// Provisional: la página de verdad (mapa de Bizkaia) se diseña antes en el lienzo
+import Provisional from '../componentes/Provisional.astro';
+import { REDES } from '../datos/web.js';
+import { LLUVIA_DE_ESTRELLAS as LLUVIA, VUELO_DIRECTO as VUELO } from '../datos/restaurantes.js';
+---
+<Provisional titulo="Restaurantes" entradilla="Estoy preparando un mapa de Bizkaia con todos los sitios que pruebo. Mientras tanto, aquí tienes los capítulos publicados.">
+  <h2 class="titulo-seccion titulo-seccion--suelto">{LLUVIA.nombre}</h2>
+  <ul class="lista-provisional">
+    {LLUVIA.capitulos.map((c) => (
+      <li>
+        <div><span class="lista-provisional__antes">Capítulo {c.numero} · {c.pueblo}</span><strong>{c.restaurante}</strong></div>
+        {c.video && <a class="ver-todo" href={c.video} target="_blank" rel="noopener">Ver el capítulo →</a>}
+      </li>
+    ))}
+    {LLUVIA.proximo && <li><div><span class="lista-provisional__antes">Capítulo {LLUVIA.proximo.numero} · {LLUVIA.proximo.pueblo}</span><strong>Muy pronto</strong></div></li>}
+  </ul>
+
+  <h2 class="titulo-seccion titulo-seccion--suelto">{VUELO.nombre}</h2>
+  <ul class="lista-provisional">
+    {VUELO.capitulos.map((c) => (
+      <li>
+        <div><span class="lista-provisional__antes">Capítulo {c.numero} · {c.pais}, sin salir de {c.ciudad}</span><strong>{c.restaurante}</strong></div>
+        <a class="ver-todo" href={c.video || REDES.instagram.url} target="_blank" rel="noopener">{c.video ? 'Ver el capítulo →' : 'Verlo en Instagram →'}</a>
+      </li>
+    ))}
+  </ul>
+</Provisional>

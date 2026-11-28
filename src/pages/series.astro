@@ -1,0 +1,15 @@
+---
+// Provisional: la página de verdad (una por serie, con sus capítulos) se diseña antes en el lienzo
+import Provisional from '../componentes/Provisional.astro';
+import { SERIES } from '../datos/series.js';
+---
+<Provisional titulo="Las series" entradilla="Cada serie tendrá su página con todos sus capítulos. De momento, estas son las series de IUKI.">
+  <div class="rejilla-series">
+    {SERIES.map((s) => (
+      <div class="serie" style={`--color-serie:${s.color}`}>
+        <span class="serie__nombre">{s.nombre}</span>
+        <span class="serie__frase">{s.frase}</span>
+      </div>
+    ))}
+  </div>
+</Provisional>

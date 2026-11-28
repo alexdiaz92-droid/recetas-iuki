@@ -1,0 +1,11 @@
+---
+// Provisional: la página de verdad se diseña antes en el lienzo
+import Provisional from '../componentes/Provisional.astro';
+import { REDES, PAGINAS } from '../datos/web.js';
+---
+<Provisional titulo="¿Quién es IUKI?" entradilla="El amigo que te enseña a cocinar y te dice dónde comer. Recetas fáciles con un toque diferente y restaurantes que merecen la pena, desde Euskadi.">
+  <div class="receta-acciones">
+    {Object.values(REDES).map((r, i) => <a class:list={['boton', i === 0 ? 'boton--negro' : 'boton--borde']} href={r.url} target="_blank" rel="noopener">{r.nombre} · {r.usuario}</a>)}
+    <a class="boton boton--borde" href={PAGINAS.colaboraciones}>Colaboraciones</a>
+  </div>
+</Provisional>

@@ -4,7 +4,7 @@ import TarjetaReceta from '../componentes/TarjetaReceta.astro';
 import FormularioNews from '../componentes/FormularioNews.astro';
 import { ICONOS } from '../componentes/iconos.js';
 import { RECETAS, destacada, atajos } from '../datos/recetas.js';
-import { SITIO, MARCA, REDES, SEGUIDORES, PAGINAS, NEWSLETTER } from '../datos/web.js';
+import { SITIO, MARCA, REDES, SEGUIDORES, PAGINAS, NEWSLETTER, FUNCIONES, esProvisional } from '../datos/web.js';
 import { LLUVIA_DE_ESTRELLAS as LLUVIA, VUELO_DIRECTO as VUELO } from '../datos/restaurantes.js';
 import { SERIES } from '../datos/series.js';
 
@@ -129,7 +129,7 @@ const datos = [
           {LLUVIA.capitulos.map((c) => <li>{c.video ? <a href={c.video} target="_blank" rel="noopener">{c.numero} · {c.pueblo}</a> : <span>{c.numero} · {c.pueblo}</span>}</li>)}
           {LLUVIA.proximo && <li><span class="pronto">{LLUVIA.proximo.numero} · {LLUVIA.proximo.pueblo} · muy pronto</span></li>}
         </ul>
-        {PAGINAS.restaurantes && <a class="boton boton--crema" href={PAGINAS.restaurantes}>Ver el mapa de Bizkaia →</a>}
+        {PAGINAS.restaurantes && !esProvisional('restaurantes') && <a class="boton boton--crema" href={PAGINAS.restaurantes}>Ver el mapa de Bizkaia →</a>}
       </div>
 
       <div class="vuelo">
@@ -161,7 +161,7 @@ const datos = [
     </div>
   </section>
 
-  <section class="envoltorio seccion" id="kaixo" aria-labelledby="titulo-kaixo">
+  <section class:list={['envoltorio seccion', !FUNCIONES.newsletter && 'seccion--final']} id="kaixo" aria-labelledby="titulo-kaixo">
     <div class="voz kaixo grano">
       <img class="voz__foto" src="/img/banner-iuki.jpg" alt="IUKI probando un plato" width="1200" height="1200" loading="lazy" />
       <div class="voz__texto">
@@ -169,13 +169,13 @@ const datos = [
         <p>El amigo que te enseña a cocinar y te dice dónde comer. Recetas fáciles con un toque diferente y restaurantes que merecen la pena, desde Euskadi.</p>
         <div class="voz__acciones">
           {PAGINAS.quienEs && <a class="boton boton--negro" href={PAGINAS.quienEs}>Mi historia</a>}
-          <a class:list={['boton', PAGINAS.quienEs ? 'boton--borde' : 'boton--negro']} href={REDES.instagram.url} target="_blank" rel="noopener">Sígueme en Instagram</a>
           <a class="boton boton--borde" href={PAGINAS.colaboraciones || `mailto:${MARCA.correo}?subject=${encodeURIComponent('Colaboración con IUKI')}`}>Colaboraciones</a>
         </div>
       </div>
     </div>
   </section>
 
+  {FUNCIONES.newsletter && (
   <section class="envoltorio seccion seccion--final" aria-labelledby="titulo-news">
     <div class="news">
       <div class="news__texto">
@@ -187,4 +187,5 @@ const datos = [
       <FormularioNews id="correo-portada" />
     </div>
   </section>
+  )}
 </Base>

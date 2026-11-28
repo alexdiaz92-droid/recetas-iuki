@@ -5,7 +5,7 @@ import TarjetaReceta from '../../componentes/TarjetaReceta.astro';
 import FormularioNews from '../../componentes/FormularioNews.astro';
 import { ICONOS } from '../../componentes/iconos.js';
 import { RECETAS, relacionadas, esSubtitulo, tiempoTexto } from '../../datos/recetas.js';
-import { SITIO, REDES, NEWSLETTER, urlCategoria } from '../../datos/web.js';
+import { SITIO, REDES, NEWSLETTER, FUNCIONES, urlCategoria } from '../../datos/web.js';
 
 export function getStaticPaths() {
   return RECETAS.map((receta) => ({ params: { id: receta.id }, props: { receta } }));
@@ -76,7 +76,7 @@ const datos = [
           <a class="boton boton--terracota" href="#receta">Ir a la receta ↓</a>
           <a class="boton boton--negro" href={video} target="_blank" rel="noopener"><Fragment set:html={ICONOS.play} />Ver el vídeo</a>
           <a class="boton boton--borde" href={whatsapp} target="_blank" rel="noopener"><Fragment set:html={ICONOS.whatsapp} /><span><span class="texto-largo">Compartir por </span>WhatsApp</span></a>
-          <button type="button" class="boton boton--borde" data-imprimir><Fragment set:html={ICONOS.descargar} />Guardar en PDF</button>
+          {FUNCIONES.guardarPdf && <button type="button" class="boton boton--borde" data-imprimir><Fragment set:html={ICONOS.descargar} />Guardar en PDF</button>}
         </div>
       </div>
       {r.foto && <img class="receta-cabecera__foto" src={r.foto} alt={r.nombre} width="1200" height="900" fetchpriority="high" />}
@@ -147,11 +147,13 @@ const datos = [
           <a class="boton boton--negro" href={REDES.instagram.url} target="_blank" rel="noopener">Seguir en Instagram</a>
         </div>
 
-        <div class="news-receta">
-          <p class="news-receta__titulo">¿Te ha gustado? Cada semana te mando una receta como esta, un descubrimiento del súper, un restaurante y un descuento.</p>
-          <p class="news-receta__regalo"><strong>De regalo:</strong> {NEWSLETTER.regalo}.</p>
-          <FormularioNews id="correo-receta" boton="negro" />
-        </div>
+        {FUNCIONES.newsletter && (
+          <div class="news-receta">
+            <p class="news-receta__titulo">¿Te ha gustado? Cada semana te mando una receta como esta, un descubrimiento del súper, un restaurante y un descuento.</p>
+            <p class="news-receta__regalo"><strong>De regalo:</strong> {NEWSLETTER.regalo}.</p>
+            <FormularioNews id="correo-receta" boton="negro" />
+          </div>
+        )}
 
         <p class="solo-impresion impresion-pie">Receta de IUKI · {url.replace('https://', '')} · Vídeo en Instagram: @cocina.iuki</p>
       </div>
@@ -176,7 +178,7 @@ const datos = [
 </Base>
 
 <script>
-  // Guardar en PDF: abre la impresión del navegador con la versión limpia de la receta
+  // Guardar en PDF (cuando esté activo): abre la impresión del navegador con la versión limpia de la receta
   document.querySelectorAll('[data-imprimir]').forEach((b) => b.addEventListener('click', () => window.print()));
 
   // Modo cocina: la pantalla no se apaga mientras está activado (solo donde el navegador lo permite)

@@ -22,22 +22,30 @@ export const REDES = {
 // De momento se cambia a mano; más adelante saldrá sola de Instagram.
 export const SEGUIDORES = { numero: 19884, fecha: '2026-11-26' };
 
-// Páginas que todavía no existen: mientras estén en null, el menú lleva al
-// bloque de la portada que corresponde, o el enlace no se enseña.
-// Cuando una página esté lista, se pone aquí su dirección.
+// Páginas de la web. Si están en null, no se enlazan en ningún sitio.
 export const PAGINAS = {
-  restaurantes: null,     // '/restaurantes/' (mapa de Bizkaia)
-  series: null,           // '/series/'
-  quienEs: null,          // '/quien-es-iuki/'
-  colaboraciones: null,   // '/colaboraciones/'
+  restaurantes: '/restaurantes/',
+  series: '/series/',
+  quienEs: '/quien-es-iuki/',
+  colaboraciones: '/colaboraciones/',
   imprescindibles: null,  // '/imprescindibles/'  (no sale en el menú hasta que tenga contenido)
   siempreEasy: null,      // '/siempre-easy/'     (no sale en el menú hasta que tenga contenido)
   avisoLegal: null,       // '/aviso-legal/'
   privacidad: null        // '/privacidad/'
 };
 
-// Newsletter: mientras no esté activa, el formulario se ve pero no envía nada
-export const NEWSLETTER = { activa: false, regalo: 'mi guía de tuppers para comer toda la semana cocinando una vez' };
+// Páginas que todavía no están diseñadas: llevan a una página sencilla provisional
+// (no la ve Google ni sale en el sitemap). Cuando la de verdad esté montada, se quita de aquí.
+export const PROVISIONALES = ['restaurantes', 'series', 'quienEs', 'colaboraciones'];
+export const esProvisional = (clave) => PROVISIONALES.includes(clave);
+
+// Funciones que no salen en la web hasta tener lo que necesitan
+export const FUNCIONES = {
+  guardarPdf: false,   // botón «Guardar en PDF»: hasta tener la plantilla del PDF
+  newsletter: false    // apuntado a la newsletter: hasta tener el servicio de newsletter
+};
+
+export const NEWSLETTER = { regalo: 'mi guía de tuppers para comer toda la semana cocinando una vez' };
 
 export const CATEGORIAS = [
   { id: 'entrantes', nombre: 'Entrantes' },

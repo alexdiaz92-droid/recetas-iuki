@@ -1,0 +1,10 @@
+---
+// Provisional: la página de verdad se diseña antes en el lienzo
+import Provisional from '../componentes/Provisional.astro';
+import { MARCA } from '../datos/web.js';
+---
+<Provisional titulo="Colaboraciones" entradilla="¿Tienes una marca y quieres trabajar conmigo? Escríbeme y lo hablamos.">
+  <div class="receta-acciones">
+    <a class="boton boton--terracota" href={`mailto:${MARCA.correo}?subject=${encodeURIComponent('Colaboración con IUKI')}`}>{MARCA.correo}</a>
+  </div>
+</Provisional>

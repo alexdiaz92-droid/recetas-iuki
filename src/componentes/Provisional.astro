@@ -1,0 +1,18 @@
+---
+// Página sencilla provisional, para los apartados que todavía no están diseñados.
+// No la ve Google (noindex) ni sale en el sitemap.
+import Base from '../layouts/Base.astro';
+const { titulo, entradilla } = Astro.props;
+---
+<Base titulo={`${titulo} | IUKI`} descripcion={entradilla} indexar={false}>
+  <div class="envoltorio provisional">
+    <section class="listado-hero">
+      <span class="antetitulo antetitulo--suave">Página en preparación</span>
+      <h1>{titulo}</h1>
+      <p>{entradilla}</p>
+    </section>
+    <div class="provisional__contenido">
+      <slot />
+    </div>
+  </div>
+</Base>

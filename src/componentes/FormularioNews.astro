@@ -1,0 +1,31 @@
+---
+// Formulario de la newsletter. Mientras NEWSLETTER.activa sea false, se ve pero no envía nada.
+import { NEWSLETTER, PAGINAS } from '../datos/web.js';
+const { id, boton = 'terracota' } = Astro.props;
+---
+<form class="formulario-news" data-news data-activa={String(NEWSLETTER.activa)} novalidate>
+  <label for={id} class="formulario-news__etiqueta">Tu correo</label>
+  <div class="formulario-news__fila">
+    <input id={id} name="correo" type="email" placeholder="nombre@correo.com" autocomplete="email" required />
+    <button type="submit" class:list={['boton', `boton--${boton}`]}>Me apunto</button>
+  </div>
+  <label class="formulario-news__privacidad">
+    <input type="checkbox" name="privacidad" required />
+    <span>He leído y acepto la {PAGINAS.privacidad ? <a href={PAGINAS.privacidad}>política de privacidad</a> : 'política de privacidad'}</span>
+  </label>
+  <p class="formulario-news__aviso" role="status" aria-live="polite"></p>
+</form>
+
+<script>
+  document.querySelectorAll('[data-news]').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const aviso = form.querySelector('[role="status"]');
+      const correo = form.querySelector('input[type="email"]');
+      const privacidad = form.querySelector('input[name="privacidad"]');
+      if (!correo.value || !correo.checkValidity()) { aviso.textContent = 'Escribe un correo válido.'; correo.focus(); return; }
+      if (!privacidad.checked) { aviso.textContent = 'Marca la casilla de la política de privacidad.'; privacidad.focus(); return; }
+      if (form.dataset.activa !== 'true') { aviso.textContent = 'La newsletter arranca muy pronto: todavía no guarda correos.'; return; }
+    });
+  });
+</script>

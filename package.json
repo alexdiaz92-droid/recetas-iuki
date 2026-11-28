@@ -1,0 +1,16 @@
+{
+  "name": "cocinaiuki",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "astro dev",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@fontsource/crimson-pro": "^5.3.0",
+    "@fontsource/figtree": "^5.3.0",
+    "@fontsource/shadows-into-light-two": "^5.3.0",
+    "astro": "^7.4.13"
+  }
+}

@@ -1,0 +1,190 @@
+---
+import Base from '../layouts/Base.astro';
+import TarjetaReceta from '../componentes/TarjetaReceta.astro';
+import FormularioNews from '../componentes/FormularioNews.astro';
+import { ICONOS } from '../componentes/iconos.js';
+import { RECETAS, destacada, atajos } from '../datos/recetas.js';
+import { SITIO, MARCA, REDES, SEGUIDORES, PAGINAS, NEWSLETTER } from '../datos/web.js';
+import { LLUVIA_DE_ESTRELLAS as LLUVIA, VUELO_DIRECTO as VUELO } from '../datos/restaurantes.js';
+import { SERIES } from '../datos/series.js';
+
+const portada = destacada();
+const ultimas = RECETAS.filter((r) => r.id !== portada.id).slice(0, 4);
+
+// «Casi 20.000 personas…»: si falta poco para el siguiente millar, «Casi»; si no, «Más de»
+const miles = Math.ceil(SEGUIDORES.numero / 1000) * 1000;
+const casi = miles - SEGUIDORES.numero <= 500;
+const cifra = new Intl.NumberFormat('es-ES').format(casi ? miles : Math.floor(SEGUIDORES.numero / 1000) * 1000);
+
+const capitulo = LLUVIA.capitulos.at(-1);
+const vuelo = VUELO.capitulos.at(-1);
+const nota = (n) => String(n).replace('.', ',');
+const sello = (n) => String(n).padStart(2, '0');
+
+const titulo = 'IUKI | Recetas fáciles y restaurantes que merecen la pena';
+const descripcion = 'Recetas fáciles con un toque diferente y restaurantes de Bizkaia que merecen la pena, con sus vídeos. Cocino en casa, pruebo sitios y te lo cuento como a un amigo.';
+
+const datos = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: MARCA.nombre,
+    alternateName: ['cocina.iuki', 'Cocina IUKI'],
+    url: SITIO + '/',
+    inLanguage: 'es'
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: MARCA.nombre,
+    alternateName: 'cocina.iuki',
+    slogan: MARCA.frase,
+    description: 'Recetas fáciles y restaurantes que merecen la pena, desde Euskadi.',
+    url: SITIO + '/',
+    logo: SITIO + MARCA.logo,
+    email: MARCA.correo,
+    sameAs: Object.values(REDES).map((r) => r.url)
+  }
+];
+---
+<Base titulo={titulo} descripcion={descripcion} datos={datos}>
+  <script is:inline slot="cabeza">
+    // Los enlaces antiguos (/#/receta/<id>) llevan a la página de la receta
+    (function () { var m = location.hash.match(/^#\/receta\/([a-z0-9-]+)/); if (m) location.replace('/recetas/' + m[1] + '/'); })();
+  </script>
+
+  <section class="envoltorio portada-hero" aria-labelledby="titulo-portada">
+    <h1 id="titulo-portada">Recetas fáciles y sitios que <em>merecen la pena</em></h1>
+    <p class="portada-hero__entradilla">Cocino en casa, pruebo restaurantes y te lo cuento como se lo contaría a un amigo.</p>
+    <div class="apetece">
+      <h2 class="antetitulo">¿Qué te apetece hoy?</h2>
+      <div class="pastillas">
+        {atajos().map((a) => <a class="pastilla" href={a.url}>{a.nombre}</a>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="envoltorio seccion--destacada" aria-labelledby="ultima-receta">
+    <div class="voz grano">
+      <a class="voz__enlace-foto" href={portada.url} tabindex="-1" aria-hidden="true">
+        <img class="voz__foto" src={portada.foto} alt="" width="1200" height="900" fetchpriority="high" />
+      </a>
+      <div class="voz__texto">
+        <span class="voz__mano mano">La última receta :)</span>
+        <h2 id="ultima-receta" class="voz__titulo"><a href={portada.url}>{portada.nombre}</a></h2>
+        {portada.descripcion && <p class="voz__entradilla">{portada.descripcion}</p>}
+        <div class="voz__acciones">
+          <a class="boton boton--negro" href={portada.url}>Ver receta →</a>
+          {portada.instagram && <a class="boton boton--borde" href={portada.instagram} target="_blank" rel="noopener"><Fragment set:html={ICONOS.play} />Ver el vídeo</a>}
+          <span class="voz__categoria">{portada.nombreCategoria}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="envoltorio seccion--ig" aria-label="Instagram">
+    <div class="franja-ig">
+      <p>{casi ? 'Casi' : 'Más de'} <em>{cifra}</em> personas ya cocinan conmigo en Instagram</p>
+      <a class="boton boton--negro" href={REDES.instagram.url} target="_blank" rel="noopener">Sígueme en Instagram</a>
+    </div>
+  </section>
+
+  <section class="envoltorio seccion seccion--primera" aria-labelledby="ultimas">
+    <div class="cabecera-seccion">
+      <h2 id="ultimas" class="titulo-seccion">Últimas recetas</h2>
+      <a class="ver-todo" href="/recetas/">Ver todas las recetas →</a>
+    </div>
+    <div class="rejilla-recetas">
+      {ultimas.map((r) => <TarjetaReceta receta={r} />)}
+    </div>
+  </section>
+
+  <section class="envoltorio seccion" id="restaurantes" aria-labelledby="titulo-restaurantes">
+    <div class="cabecera-seccion">
+      <h2 id="titulo-restaurantes" class="titulo-seccion">Restaurantes</h2>
+      {PAGINAS.restaurantes && <a class="ver-todo" href={PAGINAS.restaurantes}>Ver todos los restaurantes →</a>}
+    </div>
+    <div class="restaurantes">
+      <div class="lluvia">
+        <span class="antetitulo">{LLUVIA.nombre} · Último capítulo</span>
+        <a class="lluvia__capitulo" href={capitulo.video} target="_blank" rel="noopener">
+          {capitulo.foto && <img src={capitulo.foto} alt={capitulo.restaurante} loading="lazy" />}
+          <div class="lluvia__info">
+            <span class="lluvia__num">Capítulo {capitulo.numero} · {capitulo.pueblo}</span>
+            <span class="lluvia__restaurante">{capitulo.restaurante}</span>
+            {(capitulo.tipo || capitulo.google) && (
+              <span class="lluvia__datos">
+                {capitulo.tipo}{capitulo.tipo && capitulo.google && ' · '}{capitulo.google && `${nota(capitulo.google.nota)} en Google (${capitulo.google.resenas} reseñas)`}
+              </span>
+            )}
+            <span class="lluvia__ver">{capitulo.notaIuki != null && `Nota de IUKI: ${nota(capitulo.notaIuki)}/10 · `}Ver el capítulo →</span>
+          </div>
+        </a>
+        <div class="lluvia__contador">
+          <span class="lluvia__cifra">{capitulo.numero}</span>
+          <span class="lluvia__total">/ {LLUVIA.pueblos} pueblos</span>
+        </div>
+        <p class="lluvia__frase">{LLUVIA.frase}</p>
+        <ul class="lluvia__pueblos" aria-label="Capítulos">
+          {LLUVIA.capitulos.map((c) => <li>{c.video ? <a href={c.video} target="_blank" rel="noopener">{c.numero} · {c.pueblo}</a> : <span>{c.numero} · {c.pueblo}</span>}</li>)}
+          {LLUVIA.proximo && <li><span class="pronto">{LLUVIA.proximo.numero} · {LLUVIA.proximo.pueblo} · muy pronto</span></li>}
+        </ul>
+        {PAGINAS.restaurantes && <a class="boton boton--crema" href={PAGINAS.restaurantes}>Ver el mapa de Bizkaia →</a>}
+      </div>
+
+      <div class="vuelo">
+        <span class="antetitulo">{VUELO.nombre}</span>
+        <div class="vuelo__pase">
+          <div><span class="vuelo__dato-titulo">Origen</span><span class="vuelo__dato">{vuelo.origen}</span></div>
+          <span class="vuelo__flecha" set:html={ICONOS.flecha} />
+          <div><span class="vuelo__dato-titulo">Destino</span><span class="vuelo__dato">{vuelo.destino}</span></div>
+          <div><span class="vuelo__dato-titulo">Sello</span><span class="vuelo__dato vuelo__sello">{sello(vuelo.numero)}</span></div>
+        </div>
+        <p class="vuelo__frase">{VUELO.frase} Capítulo {vuelo.numero}: {vuelo.pais}, sin salir de {vuelo.ciudad}.</p>
+        <a class="boton boton--negro" href={vuelo.video || REDES.instagram.url} target="_blank" rel="noopener">{vuelo.video ? 'Ver el capítulo →' : 'Verlo en Instagram →'}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="envoltorio seccion" id="series" aria-labelledby="titulo-series">
+    <h2 id="titulo-series" class="titulo-seccion titulo-seccion--suelto">Las series</h2>
+    <div class="rejilla-series">
+      {SERIES.map((s) => {
+        const Etiqueta = s.url ? 'a' : 'div';
+        return (
+          <Etiqueta class="serie" href={s.url || undefined} style={`--color-serie:${s.color}`}>
+            <span class="serie__nombre">{s.nombre}</span>
+            <span class="serie__frase">{s.frase}</span>
+          </Etiqueta>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="envoltorio seccion" id="kaixo" aria-labelledby="titulo-kaixo">
+    <div class="voz kaixo grano">
+      <img class="voz__foto" src="/img/banner-iuki.jpg" alt="IUKI probando un plato" width="1200" height="1200" loading="lazy" />
+      <div class="voz__texto">
+        <h2 id="titulo-kaixo"><span class="mano">Kaixo!</span> Soy IUKI</h2>
+        <p>El amigo que te enseña a cocinar y te dice dónde comer. Recetas fáciles con un toque diferente y restaurantes que merecen la pena, desde Euskadi.</p>
+        <div class="voz__acciones">
+          {PAGINAS.quienEs && <a class="boton boton--negro" href={PAGINAS.quienEs}>Mi historia</a>}
+          <a class:list={['boton', PAGINAS.quienEs ? 'boton--borde' : 'boton--negro']} href={REDES.instagram.url} target="_blank" rel="noopener">Sígueme en Instagram</a>
+          <a class="boton boton--borde" href={PAGINAS.colaboraciones || `mailto:${MARCA.correo}?subject=${encodeURIComponent('Colaboración con IUKI')}`}>Colaboraciones</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="envoltorio seccion seccion--final" aria-labelledby="titulo-news">
+    <div class="news">
+      <div class="news__texto">
+        <span class="antetitulo">Newsletter · cada semana</span>
+        <h2 id="titulo-news" class="news__titulo">Te cuento lo que cocino, lo que descubro y dónde he comido</h2>
+        <p class="news__apartados">Una receta · Un descubrimiento del súper · Un restaurante · Un descuento</p>
+        <p class="news__regalo"><strong>De regalo al apuntarte:</strong> {NEWSLETTER.regalo}.</p>
+      </div>
+      <FormularioNews id="correo-portada" />
+    </div>
+  </section>
+</Base>

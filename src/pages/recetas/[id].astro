@@ -1,0 +1,207 @@
+---
+import Base from '../../layouts/Base.astro';
+import Logo from '../../componentes/Logo.astro';
+import TarjetaReceta from '../../componentes/TarjetaReceta.astro';
+import FormularioNews from '../../componentes/FormularioNews.astro';
+import { ICONOS } from '../../componentes/iconos.js';
+import { RECETAS, relacionadas, esSubtitulo, tiempoTexto } from '../../datos/recetas.js';
+import { SITIO, REDES, NEWSLETTER, urlCategoria } from '../../datos/web.js';
+
+export function getStaticPaths() {
+  return RECETAS.map((receta) => ({ params: { id: receta.id }, props: { receta } }));
+}
+
+const { receta: r } = Astro.props;
+const url = SITIO + r.url;
+const video = r.instagram || REDES.instagram.url;
+const whatsapp = 'https://wa.me/?text=' + encodeURIComponent(`Mira esta receta de IUKI: ${r.nombre}\n${url}`);
+const prueba = relacionadas(r);
+
+const datos = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Recipe',
+    name: r.nombre,
+    description: r.descripcionMeta,
+    url,
+    mainEntityOfPage: url,
+    author: { '@type': 'Person', name: 'IUKI', url: SITIO + '/', sameAs: Object.values(REDES).map((x) => x.url) },
+    ...(r.fecha ? { datePublished: r.fecha } : {}),
+    ...(r.foto ? { image: [SITIO + r.foto] } : {}),
+    ...(r.nombreCategoria ? { recipeCategory: r.nombreCategoria } : {}),
+    ...(r.tiempo ? { totalTime: `PT${r.tiempo}M` } : {}),
+    ...(r.etiquetas.length ? { keywords: r.etiquetas.join(', ') } : {}),
+    recipeIngredient: r.soloIngredientes,
+    ...(r.pasos.length ? { recipeInstructions: r.pasos.map((p, i) => ({ '@type': 'HowToStep', position: i + 1, text: p })) } : {})
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: SITIO + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Recetas', item: SITIO + '/recetas/' },
+      { '@type': 'ListItem', position: 3, name: r.nombre, item: url }
+    ]
+  },
+  ...(r.preguntas.length ? [{
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: r.preguntas.map((p) => ({ '@type': 'Question', name: p.pregunta, acceptedAnswer: { '@type': 'Answer', text: p.respuesta } }))
+  }] : [])
+];
+---
+<Base titulo={`${r.nombre} | Receta de IUKI`} descripcion={r.descripcionMeta} imagen={r.foto} tipo="article" datos={datos}>
+  <div class="envoltorio">
+    <div class="solo-impresion impresion-cabecera">
+      <Logo enlace={false} />
+      <span>cocinaiuki.com · @cocina.iuki</span>
+    </div>
+
+    <nav class="migas" aria-label="Migas">
+      <a href="/">Inicio</a><span aria-hidden="true">›</span>
+      <a href="/recetas/">Recetas</a><span aria-hidden="true">›</span>
+      <a href={urlCategoria(r.categoria)}>{r.nombreCategoria}</a>
+    </nav>
+
+    <div class="receta-cabecera">
+      <div class="receta-cabecera__texto">
+        <span class="etiqueta-arena">{r.nombreCategoria}</span>
+        <h1>{r.nombre}</h1>
+        {r.descripcion && <p class="receta-cabecera__entradilla">{r.descripcion}</p>}
+        <div class="receta-datos">
+          {r.tiempo && <div><span class="receta-datos__titulo">Tiempo</span><span class="receta-datos__valor">{tiempoTexto(r.tiempo)}</span></div>}
+          <div><span class="receta-datos__titulo">Ingredientes</span><span class="receta-datos__valor">{r.soloIngredientes.length}</span></div>
+        </div>
+        <div class="receta-acciones">
+          <a class="boton boton--terracota" href="#receta">Ir a la receta ↓</a>
+          <a class="boton boton--negro" href={video} target="_blank" rel="noopener"><Fragment set:html={ICONOS.play} />Ver el vídeo</a>
+          <a class="boton boton--borde" href={whatsapp} target="_blank" rel="noopener"><Fragment set:html={ICONOS.whatsapp} /><span><span class="texto-largo">Compartir por </span>WhatsApp</span></a>
+          <button type="button" class="boton boton--borde" data-imprimir><Fragment set:html={ICONOS.descargar} />Guardar en PDF</button>
+        </div>
+      </div>
+      {r.foto && <img class="receta-cabecera__foto" src={r.foto} alt={r.nombre} width="1200" height="900" fetchpriority="high" />}
+    </div>
+
+    <section id="receta" class="receta-cuerpo" aria-label="Receta">
+      <aside class="receta-lateral">
+        <div class="receta-lateral__hueco">
+          <div class="ingredientes">
+            <h2>Ingredientes</h2>
+            <ul>
+              {r.ingredientes.map((i, n) => esSubtitulo(i)
+                ? <li class="ingredientes__sub">{i.replace(/:\s*$/, '')}</li>
+                : <li><label><input type="checkbox" name={`ingrediente-${n}`} /><span>{i}</span></label></li>)}
+            </ul>
+          </div>
+        </div>
+        <div class="receta-extras">
+          {r.fotograma && (
+            <a class="video-ig" href={video} target="_blank" rel="noopener">
+              <img src={r.fotograma} alt="" width="720" height="900" loading="lazy" decoding="async" />
+              <span class="video-ig__boton"><Fragment set:html={ICONOS.play} />Ver el vídeo en Instagram</span>
+            </a>
+          )}
+          {r.producto && (
+            <div class="producto">
+              <span class="producto__titulo">Lo que uso para esta receta</span>
+              <div class="producto__fila">
+                {r.producto.foto && <img src={r.producto.foto} alt="" width="84" height="84" loading="lazy" />}
+                <div><strong>{r.producto.nombre}</strong>{r.producto.frase && <span>{r.producto.frase}</span>}</div>
+              </div>
+              {r.producto.url && <a class="boton boton--borde boton--pequeno" href={r.producto.url} target="_blank" rel="noopener sponsored">{r.producto.boton || 'Ver el producto'} →</a>}
+            </div>
+          )}
+        </div>
+      </aside>
+
+      <div class="receta-pasos">
+        <div class="receta-pasos__cabecera">
+          <h2>Paso a paso</h2>
+          <div class="modo-cocina" data-modo-cocina hidden>
+            <button type="button" class="boton boton--borde boton--pequeno" aria-pressed="false"><Fragment set:html={ICONOS.cocina} />Modo cocina</button>
+            <span class="modo-cocina__aviso" role="status" aria-live="polite"></span>
+          </div>
+        </div>
+
+        {r.pasos.length ? (
+          <ol class="pasos">
+            {r.pasos.map((p, i) => <li><span class="pasos__num" aria-hidden="true">{i + 1}</span><p>{p}</p></li>)}
+          </ol>
+        ) : (
+          <div class="sin-pasos">
+            <p>En esta receta, el paso a paso te lo cuento en el vídeo.</p>
+            <a class="boton boton--negro" href={video} target="_blank" rel="noopener"><Fragment set:html={ICONOS.play} />Ver el paso a paso en el vídeo</a>
+          </div>
+        )}
+        {r.pasosDelVideo && <p class="nota-pasos">Pasos resumidos de lo que cuento en el vídeo.</p>}
+
+        {r.consejo && (
+          <div class="consejo">
+            <h2 class="mano">El consejo de IUKI</h2>
+            <p>{r.consejo}</p>
+          </div>
+        )}
+
+        <div class="hecha">
+          <p>¿La has hecho? Súbela a historias y etiquétame en <strong>@cocina.iuki</strong>.</p>
+          <a class="boton boton--negro" href={REDES.instagram.url} target="_blank" rel="noopener">Seguir en Instagram</a>
+        </div>
+
+        <div class="news-receta">
+          <p class="news-receta__titulo">¿Te ha gustado? Cada semana te mando una receta como esta, un descubrimiento del súper, un restaurante y un descuento.</p>
+          <p class="news-receta__regalo"><strong>De regalo:</strong> {NEWSLETTER.regalo}.</p>
+          <FormularioNews id="correo-receta" boton="negro" />
+        </div>
+
+        <p class="solo-impresion impresion-pie">Receta de IUKI · {url.replace('https://', '')} · Vídeo en Instagram: @cocina.iuki</p>
+      </div>
+    </section>
+
+    {r.preguntas.length > 0 && (
+      <section class="seccion preguntas" aria-labelledby="faq">
+        <h2 id="faq" class="titulo-seccion">Preguntas frecuentes</h2>
+        {r.preguntas.map((p, i) => <details open={i === 0}><summary>{p.pregunta}</summary><p>{p.respuesta}</p></details>)}
+      </section>
+    )}
+
+    {prueba.length > 0 && (
+      <section class="seccion seccion--final prueba" aria-labelledby="prueba">
+        <h2 id="prueba" class="titulo-seccion titulo-seccion--suelto">Si te gusta esta, prueba…</h2>
+        <div class="rejilla-recetas rejilla-recetas--horizontal">
+          {prueba.map((p) => <TarjetaReceta receta={p} />)}
+        </div>
+      </section>
+    )}
+  </div>
+</Base>
+
+<script>
+  // Guardar en PDF: abre la impresión del navegador con la versión limpia de la receta
+  document.querySelectorAll('[data-imprimir]').forEach((b) => b.addEventListener('click', () => window.print()));
+
+  // Modo cocina: la pantalla no se apaga mientras está activado (solo donde el navegador lo permite)
+  const caja = document.querySelector('[data-modo-cocina]');
+  if (caja && 'wakeLock' in navigator) {
+    caja.hidden = false;
+    const boton = caja.querySelector('button');
+    const aviso = caja.querySelector('[role="status"]');
+    let bloqueo = null;
+    let activo = false;
+    const pedir = async () => {
+      try { bloqueo = await navigator.wakeLock.request('screen'); return true; } catch { return false; }
+    };
+    boton.addEventListener('click', async () => {
+      if (!activo) {
+        if (!(await pedir())) { aviso.textContent = 'Este navegador no ha dejado activarlo.'; return; }
+        activo = true;
+      } else {
+        activo = false;
+        try { await bloqueo?.release(); } catch {}
+        bloqueo = null;
+      }
+      boton.setAttribute('aria-pressed', String(activo));
+      aviso.textContent = activo ? 'La pantalla no se apagará mientras cocinas.' : '';
+    });
+    document.addEventListener('visibilitychange', () => { if (activo && document.visibilityState === 'visible') pedir(); });
+  }
+</script>

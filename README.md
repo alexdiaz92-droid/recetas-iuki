@@ -1,52 +1,46 @@
-# Las recetas de Iuki
+# cocinaiuki.com · la web de IUKI
 
-Web sencilla para consultar las recetas que Iuki publica en Instagram (@cocina.iuki).
-Está pensada sobre todo para el móvil.
+Web de IUKI (@cocina.iuki): recetas, restaurantes y series. Hecha con [Astro](https://astro.build) y publicada en Cloudflare Pages.
+Diseño: A.10 (lienzo «IUKI · Propuestas de diseño web»).
 
-## Qué hay en esta carpeta
+## Dónde está cada cosa
 
-| Archivo | Para qué sirve |
+| Qué | Dónde |
 |---|---|
-| `index.html` | La página |
-| `estilos.css` | Colores, tamaños y diseño (blanco, verde oliva y negro) |
-| `app.js` | Buscador, categorías y apertura de recetas |
-| `recetas.js` | **Las recetas.** Es el único archivo que hay que tocar para añadir platos |
-| `img/` y raíz | Fotos del banner, de los platos y fotogramas de los vídeos |
-| `build.mjs` | Genera la web en `dist/`: una página por receta (`/recetas/<id>/`), sitemap, robots y 404 |
+| **Las recetas** | `recetas.js`. Es el único archivo que hay que tocar para añadir platos (las instrucciones están al principio del archivo) |
+| Fotos de los platos y fotogramas de los vídeos | `public/` y `public/img/` (en la web salen como `/foto.jpg` o `/img/foto.jpg`) |
+| **Colores, letras y tamaños** | `src/estilos/tema.css`, todo en un único sitio |
+| Colocación de cada bloque | `src/estilos/web.css` |
+| Marca, redes, menú, seguidores y qué páginas existen | `src/datos/web.js` |
+| Último capítulo de Lluvia de estrellas y de Vuelo directo | `src/datos/restaurantes.js` |
+| Las series de la portada | `src/datos/series.js` |
+| Las páginas (portada, recetas, cada receta, 404, sitemap y robots) | `src/pages/` |
+| Cabecera, pie, tarjetas y formulario de la newsletter | `src/componentes/` |
 
-## Publicarla por primera vez
+## Cómo se publica
 
-### 1. Subir los archivos a GitHub
+Cloudflare Pages (proyecto «recetas-iuki») publica sola la web con cada cambio:
 
-1. Crea una cuenta gratuita en https://github.com
-2. Arriba a la derecha pulsa **+** → **New repository**.
-3. En *Repository name* escribe `recetas-iuki`. Puede ser *Public* o *Private*. No marques ninguna casilla más y pulsa **Create repository**.
-4. En la página que aparece, pulsa el enlace **uploading an existing file**.
-5. Descomprime el ZIP en tu ordenador, abre la carpeta `recetas-iuki` y **arrastra todo su contenido** (los archivos y la carpeta `img`) a la ventana del navegador. No arrastres el ZIP ni la carpeta exterior: `index.html` tiene que quedar en la raíz del repositorio.
-6. Abajo, pulsa **Commit changes**.
+- La rama `main` es la web publicada en https://cocinaiuki.com
+- Cada rama de prueba tiene su vista previa en `https://<rama>.recetas-iuki-8zf.pages.dev`
+- Configuración de compilación: comando `node build.mjs`, carpeta `dist`. Cloudflare instala antes los paquetes de `package.json` (Astro y las letras) y usa la versión de Node de `.node-version`.
 
-### 2. Publicarla en Cloudflare Pages
-
-1. Crea una cuenta gratuita en https://dash.cloudflare.com
-2. En el menú, entra en **Workers y Pages** → **Crear** → pestaña **Pages** → **Conectar a Git**.
-3. Autoriza a Cloudflare a ver tu cuenta de GitHub y elige el repositorio `recetas-iuki`.
-4. En la configuración de compilación:
-   - *Framework preset*: **None** (Ninguno)
-   - *Build command*: `node build.mjs`
-   - *Build output directory*: `dist`
-5. Pulsa **Guardar e implementar**. En un minuto la web estará en una dirección del tipo `https://recetas-iuki.pages.dev`.
-
-Si más adelante queréis un dominio propio (por ejemplo `recetasdeiuki.com`), se añade desde el proyecto en Cloudflare, en **Dominios personalizados**.
+Todo cambio va primero a una rama de prueba y pasa a `main` solo cuando Peio da el sí en la vista previa.
 
 ## Añadir una receta nueva
 
-1. Sube las dos imágenes a la carpeta `img/` del repositorio (botón **Add file** → **Upload files**):
-   - la foto del plato, por ejemplo `img/lentejas.jpg`
-   - el fotograma del vídeo, por ejemplo `img/lentejas-video.jpg`
-   Mejor en horizontal, unos 720 × 480 píxeles.
-2. Abre `recetas.js` en GitHub, pulsa el lápiz para editar, copia el bloque de una receta y cambia los datos. Las instrucciones están al principio del propio archivo.
-3. Pulsa **Commit changes**. Cloudflare genera de nuevo la web (portada, página de la receta y sitemap) y la publica sola en un minuto.
+1. Sube la foto del plato y el fotograma del vídeo a `public/img/` (por ejemplo `public/img/lentejas.jpg` y `public/img/lentejas-video.jpg`).
+2. En `recetas.js`, copia el bloque de una receta, pégalo al principio de la lista y cambia los datos.
+3. Guarda el cambio. Cloudflare genera de nuevo la portada, la página de la receta y el sitemap.
 
-Cada receta tiene su propia dirección: `https://cocinaiuki.com/recetas/<id>/`. No cambies el `id` de una receta ya publicada: su dirección cambiaría y se perdería lo que Google ya conoce de ella.
+Cada receta tiene su propia dirección: `https://cocinaiuki.com/recetas/<id>/`. **No cambies el `id` de una receta ya publicada**: su dirección cambiaría y se perdería lo que Google ya conoce de ella.
 
-Si os equivocáis con una coma o unas comillas, la web puede quedarse en blanco: basta con corregir el archivo o deshacer el último cambio.
+Si algo está mal en `recetas.js` (un id repetido, una categoría que no existe, una coma de más), la publicación se para y Cloudflare dice qué falla; la web publicada sigue como estaba.
+
+## Probar en local
+
+```
+npm install
+node build.mjs        # genera la web en dist/
+npx astro dev         # o verla mientras se edita, en http://localhost:4321
+```

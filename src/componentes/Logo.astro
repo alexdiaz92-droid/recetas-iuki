@@ -1,0 +1,7 @@
+---
+// Logo «.IUKI»: el punto es decorativo, así que lectores de pantalla y buscadores leen «IUKI»
+const { enlace = true, clase = '' } = Astro.props;
+---
+{enlace
+  ? <a href="/" class:list={['logo', clase]} aria-label="IUKI, ir a la portada"><span aria-hidden="true">.</span>IUKI</a>
+  : <span class:list={['logo', clase]}><span aria-hidden="true">.</span>IUKI</span>}

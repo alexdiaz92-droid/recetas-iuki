@@ -1,0 +1,51 @@
+---
+import Logo from './Logo.astro';
+import { MARCA, REDES, PAGINAS, urlCategoria } from '../datos/web.js';
+import { RECETAS } from '../datos/recetas.js';
+
+const hay30 = RECETAS.some((r) => r.tiempo && r.tiempo <= 30);
+const descubre = [
+  { nombre: 'Restaurantes', url: PAGINAS.restaurantes || '/#restaurantes' },
+  { nombre: 'Series', url: PAGINAS.series || '/#series' },
+  PAGINAS.imprescindibles && { nombre: 'Imprescindibles', url: PAGINAS.imprescindibles },
+  PAGINAS.siempreEasy && { nombre: 'Siempre easy', url: PAGINAS.siempreEasy }
+].filter(Boolean);
+const legal = [
+  PAGINAS.avisoLegal && { nombre: 'Aviso legal', url: PAGINAS.avisoLegal },
+  PAGINAS.privacidad && { nombre: 'Privacidad', url: PAGINAS.privacidad }
+].filter(Boolean);
+const anio = new Date().getFullYear();
+---
+<footer class="pie">
+  <div class="envoltorio pie__columnas">
+    <div class="pie__marca">
+      <Logo enlace={false} />
+      <span class="pie__lema">{MARCA.lema}</span>
+    </div>
+    <nav class="pie__columna" aria-labelledby="pie-recetas">
+      <h2 id="pie-recetas">Recetas</h2>
+      <a href="/recetas/">Todas</a>
+      <a href={urlCategoria('cuchara')}>De cuchara</a>
+      {hay30 && <a href="/recetas/?tiempo=30">En 30 minutos</a>}
+      <a href={urlCategoria('postres')}>Postres</a>
+    </nav>
+    <nav class="pie__columna" aria-labelledby="pie-descubre">
+      <h2 id="pie-descubre">Descubre</h2>
+      {descubre.map((d) => <a href={d.url}>{d.nombre}</a>)}
+    </nav>
+    <nav class="pie__columna" aria-labelledby="pie-iuki">
+      <h2 id="pie-iuki">IUKI</h2>
+      <a href={PAGINAS.quienEs || '/#kaixo'}>¿Quién es IUKI?</a>
+      <a href={PAGINAS.colaboraciones || `mailto:${MARCA.correo}?subject=${encodeURIComponent('Colaboración con IUKI')}`}>Colaboraciones con marcas</a>
+      <a href={`mailto:${MARCA.correo}`}>{MARCA.correo}</a>
+    </nav>
+    <nav class="pie__columna" aria-labelledby="pie-sigueme">
+      <h2 id="pie-sigueme">Sígueme</h2>
+      {Object.values(REDES).map((r) => <a href={r.url} target="_blank" rel="noopener">{r.nombre} · {r.usuario}</a>)}
+    </nav>
+  </div>
+  <div class="envoltorio pie__legal">
+    <span>© {anio} IUKI</span>
+    {legal.map((l) => <a href={l.url}>{l.nombre}</a>)}
+  </div>
+</footer>

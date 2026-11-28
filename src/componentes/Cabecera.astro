@@ -1,0 +1,80 @@
+---
+import Logo from './Logo.astro';
+import { MENU, REDES } from '../datos/web.js';
+import { ICONOS } from './iconos.js';
+
+const actual = Astro.url.pathname;
+---
+<header class="cabecera">
+  <div class="envoltorio cabecera__fila">
+    <Logo />
+
+    <nav class="menu" aria-label="Principal">
+      {MENU.map((item) => item.submenu ? (
+        <div class="desplegable" data-desplegable>
+          <button type="button" class="desplegable__boton" aria-expanded="false" aria-controls="submenu-recetas">
+            {item.nombre} <span class="desplegable__flecha" aria-hidden="true">▾</span>
+          </button>
+          <ul class="desplegable__lista" id="submenu-recetas">
+            {item.submenu.map((s) => <li><a href={s.url}>{s.nombre}</a></li>)}
+          </ul>
+        </div>
+      ) : (
+        <a href={item.url} aria-current={actual === item.url ? 'page' : undefined}>{item.nombre}</a>
+      ))}
+      <a class="boton-redondo" href="/recetas/#buscar" aria-label="Buscar recetas" set:html={ICONOS.lupa} />
+    </nav>
+
+    <div class="menu-movil">
+      <a class="boton-redondo" href="/recetas/#buscar" aria-label="Buscar recetas" set:html={ICONOS.lupa} />
+      <button type="button" class="boton-redondo boton-redondo--negro" aria-expanded="false" aria-controls="panel-movil" aria-label="Abrir el menú" data-abrir-menu>
+        <span data-icono-abrir set:html={ICONOS.menu} />
+        <span data-icono-cerrar hidden set:html={ICONOS.cerrar} />
+      </button>
+    </div>
+  </div>
+
+  <nav class="panel-movil envoltorio" id="panel-movil" aria-label="Menú" hidden>
+    {MENU.map((item) => item.submenu ? (
+      <>
+        <a href={item.url}>{item.nombre}</a>
+        <div class="panel-movil__sub">
+          {item.submenu.slice(1).map((s) => <a href={s.url}>{s.nombre}</a>)}
+        </div>
+      </>
+    ) : (
+      <a href={item.url}>{item.nombre}</a>
+    ))}
+    <a class="boton boton--negro" href={REDES.instagram.url} target="_blank" rel="noopener">Sígueme en Instagram</a>
+  </nav>
+</header>
+
+<script>
+  // Desplegable «Recetas ▾» del ordenador
+  document.querySelectorAll('[data-desplegable]').forEach((caja) => {
+    const boton = caja.querySelector('button');
+    const cerrar = () => { caja.classList.remove('abierto'); boton.setAttribute('aria-expanded', 'false'); };
+    boton.addEventListener('click', () => {
+      const abierto = caja.classList.toggle('abierto');
+      boton.setAttribute('aria-expanded', String(abierto));
+    });
+    document.addEventListener('click', (e) => { if (!caja.contains(e.target)) cerrar(); });
+    caja.addEventListener('keydown', (e) => { if (e.key === 'Escape') { cerrar(); boton.focus(); } });
+  });
+
+  // Menú del móvil
+  const botonMenu = document.querySelector('[data-abrir-menu]');
+  const panel = document.getElementById('panel-movil');
+  if (botonMenu && panel) {
+    const cambiar = (abrir) => {
+      panel.hidden = !abrir;
+      botonMenu.setAttribute('aria-expanded', String(abrir));
+      botonMenu.setAttribute('aria-label', abrir ? 'Cerrar el menú' : 'Abrir el menú');
+      botonMenu.querySelector('[data-icono-abrir]').hidden = abrir;
+      botonMenu.querySelector('[data-icono-cerrar]').hidden = !abrir;
+    };
+    botonMenu.addEventListener('click', () => cambiar(panel.hidden));
+    panel.addEventListener('click', (e) => { if (e.target.closest('a')) cambiar(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) { cambiar(false); botonMenu.focus(); } });
+  }
+</script>

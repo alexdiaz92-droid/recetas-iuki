@@ -16,12 +16,22 @@
   - pasos:         lista entre comillas; si está vacía [], la web indica que los pasos están en el vídeo
   - pasosDelVideo: true si los pasos se han sacado de lo que Iuki cuenta en el vídeo
   - consejo:       opcional; si no hay, déjalo como ""
+
+  Campos opcionales nuevos (web A.10). Si no están, la web no enseña ese bloque:
+  - descripcion:   una frase que sale debajo del nombre y en Google
+  - tiempo:        minutos, en número (por ejemplo 25). En las tarjetas solo sale si es de 30 o menos
+  - etiquetas:     lista, por ejemplo ["tupper", "pollo"]. "tupper" activa el atajo «Para el tupper»
+  - preguntas:     preguntas frecuentes, por ejemplo
+                   [{ "pregunta": "¿Se puede congelar?", "respuesta": "Sí, hasta tres meses." }]
+  - producto:      el recuadro «Lo que uso para esta receta», por ejemplo
+                   { "nombre": "Sartén …", "frase": "Por qué la uso", "foto": "/img/…jpg", "url": "https://…", "boton": "Ver en Inoxibar" }
 */
 
 window.RECETAS = [
   {
     "id": "pasta-cremosa-con-crujiente-de-jamon",
     "nombre": "Pasta cremosa con crujiente de jamón",
+    "descripcion": "Espaguetis con una salsa cremosa de coliflor y, por encima, un crujiente de jamón con panko y pimentón.",
     "categoria": "pasta",
     "fecha": "2026-11-03",
     "foto": "pasta-cremosa-con-crujiente-de-jamon.jpg",
@@ -52,6 +62,7 @@ window.RECETAS = [
   {
     "id": "garbanzos-a-la-crema",
     "nombre": "Garbanzos a la crema",
+    "descripcion": "Un plato de cuchara con garbanzos de bote y un ingrediente que no esperas: crema de cacahuete.",
     "categoria": "cuchara",
     "fecha": "2026-10-21",
     "foto": "garbanzos-a-la-crema.jpg",

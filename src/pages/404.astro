@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base titulo="No encuentro esta página | IUKI" indexar={false}>
+  <section class="envoltorio error-404">
+    <span class="antetitulo antetitulo--suave">Error 404</span>
+    <h1>Esta página no existe o ha cambiado de sitio</h1>
+    <p>Las recetas siguen aquí, con buscador por plato o ingrediente.</p>
+    <div class="receta-acciones">
+      <a class="boton boton--terracota" href="/recetas/">Ver todas las recetas</a>
+      <a class="boton boton--borde" href="/">Ir a la portada</a>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,11 @@
+---
+// Tarjeta de receta: foto 4:5, «categoría · tiempo» (el tiempo, solo si es de 30 minutos o menos) y nombre
+const { receta: r, perezosa = true, atributos = {} } = Astro.props;
+---
+<a class="tarjeta-receta" href={r.url} {...atributos}>
+  <div class="tarjeta-receta__foto">
+    {r.foto && <img src={r.foto} alt="" width="720" height="900" loading={perezosa ? 'lazy' : 'eager'} decoding="async" />}
+    <span class="tarjeta-receta__etiqueta">{r.etiquetaTarjeta}</span>
+  </div>
+  <span class="tarjeta-receta__nombre">{r.nombre}</span>
+</a>

@@ -1,0 +1,132 @@
+---
+// Listado de recetas con buscador y filtros.
+// Diseño provisional con el estilo de la A.10: el definitivo se dibuja antes en el lienzo.
+import Base from '../../layouts/Base.astro';
+import TarjetaReceta from '../../componentes/TarjetaReceta.astro';
+import { ICONOS } from '../../componentes/iconos.js';
+import { RECETAS } from '../../datos/recetas.js';
+import { CATEGORIAS, SITIO } from '../../datos/web.js';
+
+const normalizar = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const presentes = CATEGORIAS.filter((c) => RECETAS.some((r) => r.categoria === c.id));
+const total = RECETAS.length;
+
+const datos = [{
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Recetas de IUKI',
+  url: SITIO + '/recetas/',
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: total,
+    itemListElement: RECETAS.map((r, i) => ({ '@type': 'ListItem', position: i + 1, url: SITIO + r.url, name: r.nombre }))
+  }
+}];
+---
+<Base titulo="Recetas fáciles con vídeo | IUKI" descripcion={`Las ${total} recetas de IUKI con sus ingredientes, el paso a paso y el vídeo. Busca por plato o ingrediente.`} datos={datos}>
+  <div class="envoltorio">
+    <section class="listado-hero" aria-labelledby="titulo-recetas">
+      <h1 id="titulo-recetas">Recetas</h1>
+      <p>Todas las recetas de mis vídeos, con los ingredientes, el paso a paso y el vídeo.</p>
+    </section>
+
+    <div class="buscador">
+      <label for="buscar" class="antetitulo antetitulo--suave">¿Qué receta buscas?</label>
+      <div class="buscador__caja">
+        <Fragment set:html={ICONOS.lupa} />
+        <input id="buscar" type="search" placeholder="Plato o ingrediente" autocomplete="off" enterkeyhint="search" />
+      </div>
+      <div class="pastillas" role="group" aria-label="Tipo de plato" data-categorias>
+        <button type="button" class="pastilla" data-cat="todas" aria-pressed="true">Todas</button>
+        {presentes.map((c) => <button type="button" class="pastilla" data-cat={c.id} aria-pressed="false">{c.nombre}</button>)}
+        <button type="button" class="pastilla" data-extra hidden aria-label="Quitar este filtro"></button>
+      </div>
+    </div>
+
+    <p class="contador" aria-live="polite" data-contador>{total} recetas</p>
+    <div class="rejilla-recetas seccion--final" data-rejilla>
+      {RECETAS.map((r) => (
+        <TarjetaReceta receta={r} atributos={{
+          'data-categoria': r.categoria,
+          'data-texto': normalizar([r.nombre, r.nombreCategoria, ...r.soloIngredientes, ...r.etiquetas].join(' ')),
+          'data-tiempo': r.tiempo || '',
+          'data-etiquetas': r.etiquetas.join(' ')
+        }} />
+      ))}
+    </div>
+    <div class="vacio seccion--final" data-vacio hidden>
+      <p class="vacio__titulo">No encuentro ninguna receta con esas palabras.</p>
+      <p>Prueba con un ingrediente, por ejemplo «huevo» o «arroz».</p>
+      <button type="button" class="boton boton--negro" data-ver-todas>Ver todas las recetas</button>
+    </div>
+  </div>
+</Base>
+
+<script>
+  const normalizar = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const NOMBRES_EXTRA = { tiempo: (v) => `En ${v} minutos`, etiqueta: (v) => (v === 'tupper' ? 'Para el tupper' : v) };
+
+  const buscador = document.getElementById('buscar');
+  const grupo = document.querySelector('[data-categorias]');
+  const extra = grupo.querySelector('[data-extra]');
+  const tarjetas = [...document.querySelectorAll('[data-rejilla] > a')];
+  const contador = document.querySelector('[data-contador]');
+  const vacio = document.querySelector('[data-vacio]');
+  const rejilla = document.querySelector('[data-rejilla]');
+
+  const p = new URLSearchParams(location.search);
+  const estado = {
+    texto: p.get('buscar') || '',
+    categoria: p.get('categoria') || 'todas',
+    tiempo: p.get('tiempo') || '',
+    etiqueta: p.get('etiqueta') || ''
+  };
+  buscador.value = estado.texto;
+
+  function pintar() {
+    const q = normalizar(estado.texto.trim());
+    let n = 0;
+    for (const t of tarjetas) {
+      const ok =
+        (estado.categoria === 'todas' || t.dataset.categoria === estado.categoria) &&
+        (!q || q.split(/\s+/).every((palabra) => t.dataset.texto.includes(palabra))) &&
+        (!estado.tiempo || (t.dataset.tiempo && Number(t.dataset.tiempo) <= Number(estado.tiempo))) &&
+        (!estado.etiqueta || t.dataset.etiquetas.split(' ').includes(estado.etiqueta));
+      t.hidden = !ok;
+      if (ok) n++;
+    }
+    contador.textContent = n === 1 ? '1 receta' : `${n} recetas`;
+    vacio.hidden = n > 0;
+    rejilla.hidden = n === 0;
+    grupo.querySelectorAll('[data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === estado.categoria)));
+    const filtro = estado.tiempo ? NOMBRES_EXTRA.tiempo(estado.tiempo) : estado.etiqueta ? NOMBRES_EXTRA.etiqueta(estado.etiqueta) : '';
+    extra.hidden = !filtro;
+    extra.textContent = filtro ? `${filtro} ✕` : '';
+    extra.setAttribute('aria-pressed', String(!!filtro));
+
+    const u = new URLSearchParams();
+    if (estado.texto.trim()) u.set('buscar', estado.texto.trim());
+    if (estado.categoria !== 'todas') u.set('categoria', estado.categoria);
+    if (estado.tiempo) u.set('tiempo', estado.tiempo);
+    if (estado.etiqueta) u.set('etiqueta', estado.etiqueta);
+    const qs = u.toString();
+    history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : '') + location.hash);
+  }
+
+  buscador.addEventListener('input', () => { estado.texto = buscador.value; pintar(); });
+  grupo.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.hasAttribute('data-extra')) { estado.tiempo = ''; estado.etiqueta = ''; }
+    else estado.categoria = b.dataset.cat;
+    pintar();
+  });
+  document.querySelector('[data-ver-todas]').addEventListener('click', () => {
+    Object.assign(estado, { texto: '', categoria: 'todas', tiempo: '', etiqueta: '' });
+    buscador.value = '';
+    pintar();
+  });
+
+  pintar();
+  if (location.hash === '#buscar') buscador.focus();
+</script>
